@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4377aa5e-ee1d-45ac-8d20-62266d1f36b2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="munit_demoFlow" doc:id="650999ce-9dfb-4878-8f66-4f23e3815a96" >
+		<http:listener doc:name="Listener" doc:id="dac5c684-7cfc-47fc-b1b3-b6f65196acda" config-ref="HTTP_Listener_config" path="/test"/>
+		<ee:transform doc:name="Transform Message" doc:id="603e2fd4-cfe8-4a7f-b7ad-ba328d97583d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Name: payload.firstName ++ " " ++ payload.lastName,
+	Role: payload.role
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="eb7d5e38-298c-4afa-8401-418c78c41df7" >
+			<when expression='#[attributes.queryParams.level=="1"]'>
+				<ee:transform doc:name="Transform Message" doc:id="776d9ed3-7f7b-482f-b48d-80fd3dc85dc4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {Salary: "Rs. 25,000"}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[attributes.queryParams.level=="2"]'>
+				<ee:transform doc:name="Transform Message" doc:id="d31b535f-58ae-4efb-a1c3-fdda9df1c5a0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {Salary: "Rs. 35,000"}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="0f32d7c1-1c2e-4427-bbfd-c4839e0f0c18" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Job level should be 1 or 2. Please check!"
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

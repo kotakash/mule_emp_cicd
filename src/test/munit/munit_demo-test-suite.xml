@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="munit_demo-test-suite.xml" />
+	<munit:test name="outputNotNullTestCase" doc:id="061a6b24-4656-445d-a9e2-02d7ed1391d8" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="aae005e4-a20c-477f-97d9-92c4489179a9" >
+				<munit:payload value='{ "firstName": "Kota", "lastName": "Kashyap", "role": "Systems Engineer" }' mediaType="application/json" />
+				<munit:attributes value="#[{queryParams:{level:1}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to munit_demoFlow" doc:id="c83cc1b9-fc5f-4f69-9f13-5f5b0ca3a2c3" name="munit_demoFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9252855f-cf4b-4b39-82dc-4db129b34885" message="Some error occured. Payload cannot be null." expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="defaultMessageTestCase" doc:id="6984d530-c38f-4926-bc1d-a70a5afa5c1b" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b0289ffb-38e1-4976-bc9b-357c7fb35d95" >
+				<munit:payload value='{ "firstName": "Kota", "lastName": "Kashyap", "role": "Systems Engineer" }' mediaType="application/json" />
+				<munit:attributes value="#[{queryParams:{level:5}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to munit_demoFlow" doc:id="aea2785c-388d-4cea-8a09-6c3ca936612e" name="munit_demoFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="b39230d2-abd3-4549-8089-81ea3b347bcd" actual="#[payload]" expected='#["Job level should be 1 or 2. Please check!"]' message="Check your mule flow."/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
